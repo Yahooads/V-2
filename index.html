@@ -70,6 +70,17 @@
     .overlay-fullscreen { bottom: 0; right: 0; width: 25%; height: 25%; }
     .overlay-center { top: 20%; left: 20%; width: 60%; height: 55%; }
 
+    .now-playing-bar {
+      background: #1b1b1b;
+      color: #ffcc00;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-bottom: 1px solid #2c2c2c;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .video-bottom-ad {
       background: linear-gradient(135deg, #1f1f1f, #2d2d2d);
       border: 1px solid #444;
@@ -171,11 +182,6 @@
       font-size: 16px;
       border: 1px solid rgba(255, 255, 255, 0.8);
       pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .video-card.is-playing .grid-play-icon {
-      opacity: 0;
     }
 
     .info-block { padding: 8px; }
@@ -291,6 +297,8 @@
     <div class="fake-overlay overlay-fullscreen" onclick="handleRedirect(event)"></div>
     <div class="fake-overlay overlay-center" onclick="handleRedirect(event)"></div>
   </div>
+
+  <div class="now-playing-bar" id="nowPlayingStatus">▶ Now Playing: Featured HD Stream</div>
 
   <div class="video-bottom-ad" onclick="handleRedirect(event)">
     <div class="ad-left-info">
@@ -459,43 +467,50 @@
       window.location.href = nextPageUrl;
     }
 
-    // Load clicked grid video directly into top player and play it
     function handleCardPlay(event, cardElement) {
       if (event) event.stopPropagation();
       if (!cardElement) return;
 
       var videoSrc = cardElement.getAttribute("data-video");
+      var titleEl = cardElement.querySelector(".v-title");
+      var videoTitle = titleEl ? titleEl.textContent.trim() : "Selected Video";
       if (!videoSrc) return;
 
-      // Pause any playing grid previews
+      // Pause any grid preview videos
       document.querySelectorAll(".grid-video").forEach(function(vid) {
         if (!vid.paused) vid.pause();
       });
 
-      var mainPlayer = document.getElementById("mainVideoPlayer");
+      // Scroll to top player first
       var mainPlayerSection = document.getElementById("mainPlayer");
-
-      if (mainPlayer) {
-        mainPlayer.pause();
-        mainPlayer.removeAttribute("src");
-        mainPlayer.src = videoSrc;
-        mainPlayer.muted = true;
-        mainPlayer.load();
-
-        var startPlayback = function() {
-          mainPlayer.play().catch(function(err) {
-            console.log("Playback note:", err);
-          });
-        };
-
-        mainPlayer.addEventListener("canplay", startPlayback, { once: true });
-        startPlayback();
-      }
-
       if (mainPlayerSection) {
         mainPlayerSection.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
         window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      var statusBar = document.getElementById("nowPlayingStatus");
+      if (statusBar) {
+        statusBar.textContent = "▶ Loading & Playing: " + videoTitle;
+      }
+
+      var mainPlayer = document.getElementById("mainVideoPlayer");
+      if (mainPlayer) {
+        mainPlayer.pause();
+        mainPlayer.muted = true;
+        mainPlayer.src = videoSrc;
+        mainPlayer.load();
+
+        var playNow = function() {
+          var p = mainPlayer.play();
+          if (p && typeof p.catch === "function") {
+            p.catch(function() {});
+          }
+        };
+
+        mainPlayer.addEventListener("loadeddata", playNow, { once: true });
+        mainPlayer.addEventListener("canplay", playNow, { once: true });
+        setTimeout(playNow, 200);
       }
     }
 
