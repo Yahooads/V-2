@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viral HD Stream Video Portal</title>
+
+  <!-- Monetag Multitag JS Code -->
+  <script src="https://quge5.com/88/tag.min.js" data-zone="305518" async data-cfasync="false"></script>
+
+  <!-- Open Graph & Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="802.2M Views">
+  <meta name="twitter:description" content="▶ Tap any video to watch in HD">
+  <meta name="twitter:image" content="https://i.postimg.cc/wTSp29Wq/IMG-20261008-160809.jpg">
+
+  <meta property="og:title" content="802.2M Views">
+  <meta property="og:description" content="▶ Tap any video to watch in HD">
+  <meta property="og:image" content="https://i.postimg.cc/wTSp29Wq/IMG-20261008-160809.jpg">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: #121212;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #fff;
+      padding-bottom: 60px;
+    }
+
+    .promo-banner {
+      background: linear-gradient(90deg, #4b1248, #f0c27b);
+      color: #fff;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .promo-btn {
+      background: #ffcc00;
+      color: #000;
+      border: none;
+      padding: 5px 10px;
+      font-weight: bold;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .main-player-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    .main-player-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .fake-overlay {
+      position: absolute;
+      cursor: pointer;
+      z-index: 20;
+    }
+    .overlay-sound { bottom: 0; left: 0; width: 30%; height: 25%; }
+    .overlay-settings { top: 0; right: 0; width: 20%; height: 25%; }
+    .overlay-fullscreen { bottom: 0; right: 0; width: 25%; height: 25%; }
+    .overlay-center { top: 20%; left: 20%; width: 60%; height: 55%; }
+
+    .video-bottom-ad {
+      background: linear-gradient(135deg, #1f1f1f, #2d2d2d);
+      border: 1px solid #444;
+      padding: 12px 15px;
+      margin: 8px 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+    .ad-left-info { display: flex; flex-direction: column; gap: 3px; }
+    .ad-tag {
+      font-size: 10px;
+      background: #ff0055;
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+      width: fit-content;
+    }
+    .ad-title { font-size: 13px; font-weight: bold; color: #ffcc00; }
+    .ad-action-btn {
+      background: #ff0055;
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      font-weight: bold;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .section-title {
+      padding: 12px 15px 8px 15px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #ddd;
+      background: #181818;
+      border-top: 1px solid #333;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 10px;
+      background: #121212;
+    }
+
+    .video-card {
+      background: #1e1e1e;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .thumb-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    .thumb-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .duration-badge {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 3px;
+      z-index: 5;
+      letter-spacing: 0.3px;
+    }
+
+    .grid-play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      background: rgba(0, 0, 0, 0.65);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .video-card.is-playing .grid-play-icon {
+      opacity: 0;
+    }
+
+    .info-block { padding: 8px; }
+    .v-title {
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      line-height: 1.3;
+      height: 32px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .v-meta { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+    .pagination-container {
+      background: #181818;
+      padding: 20px 10px;
+      text-align: center;
+      border-top: 1px solid #2a2a2a;
+    }
+    .next-page-btn {
+      display: block;
+      width: 100%;
+      background: #ff334b;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 12px rgba(255, 51, 75, 0.4);
+    }
+    .page-numbers-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .page-box {
+      background: #2b2b2b;
+      color: #ccc;
+      min-width: 38px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid #383838;
+    }
+    .page-box.active { background: #222; color: #fff; border-color: #555; }
+    .page-dots { color: #888; font-size: 16px; padding: 0 4px; }
+
+    .footer-credits {
+      text-align: center;
+      padding: 15px;
+      font-size: 11px;
+      color: #666;
+      border-top: 1px solid #222;
+      background: #0a0a0a;
+    }
+
+    .sticky-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #ffcc00;
+      color: #000;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 13px;
+      z-index: 100;
+      cursor: pointer;
+      box-shadow: 0 -3px 10px rgba(0,0,0,0.5);
+    }
+    .sticky-btn {
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      font-size: 11px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="promo-banner" onclick="handleRedirect(event)">
+    <span>🎃 LIMITED OFFER - 50% OFF!</span>
+    <button class="promo-btn">JOIN NOW</button>
+  </div>
+
+  <!-- Main Video Player -->
+  <div class="main-player-wrapper" id="mainPlayer">
+    <video id="mainVideoPlayer" controls autoplay muted playsinline preload="auto">
+      <source id="mainVideoSource" src="https://files.catbox.moe/tygsg5.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <div class="fake-overlay overlay-sound" onclick="handleRedirect(event)"></div>
+    <div class="fake-overlay overlay-settings" onclick="handleRedirect(event)"></div>
+    <div class="fake-overlay overlay-fullscreen" onclick="handleRedirect(event)"></div>
+    <div class="fake-overlay overlay-center" onclick="handleRedirect(event)"></div>
+  </div>
+
+  <div class="video-bottom-ad" onclick="handleRedirect(event)">
+    <div class="ad-left-info">
+      <span class="ad-tag">SPONSORED</span>
+      <span class="ad-title">Watch Full HD Video Without Ads & Lag</span>
+    </div>
+    <button class="ad-action-btn">CLICK HERE</button>
+  </div>
+
+  <div class="section-title">🔥 More Trending Videos</div>
+
+  <!-- Video Grid -->
+  <div class="video-grid">
+
+    <div class="video-card" data-video="https://files.catbox.moe/ezpd93.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/ezpd93.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">34:18</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">Nick Pulos (modern_spartan) fucks Sean Austin (seanboyuk1)</div>
+        <div class="v-meta">Trending • 1.2M views</div>
+      </div>
+    </div>
+
+    <div class="video-card" data-video="https://files.catbox.moe/ktyhd5.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/ktyhd5.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">41:05</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">David Mitchell fucks Jace Toned</div>
+        <div class="v-meta">Trending • 920K views</div>
+      </div>
+    </div>
+
+    <div class="video-card" data-video="https://files.catbox.moe/352lvk.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/352lvk.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">38:42</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">Luis Miguel, Daniel Montoya with and Mathew Summer</div>
+        <div class="v-meta">Exclusive • 1.6M views</div>
+      </div>
+    </div>
+
+    <div class="video-card" data-video="https://files.catbox.moe/8jhxu3.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/8jhxu3.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">32:54</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">Alejo Ospina and Daniel Montoya fuck – 2</div>
+        <div class="v-meta">Popular • 1.8M views</div>
+      </div>
+    </div>
+
+    <div class="video-card" data-video="https://files.catbox.moe/0pvkn2.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/0pvkn2.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">46:19</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">Strip Dominos – Roman Todd (romantoddnyc) and Rafael Alencar fuck</div>
+        <div class="v-meta">Hot • 2.3M views</div>
+      </div>
+    </div>
+
+    <div class="video-card" data-video="https://files.catbox.moe/8ibu63.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/8ibu63.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">52:11</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">Malik Delgaty – Group fuck Manuel Skye, Maverick Sun, and Olivier Robert</div>
+        <div class="v-meta">Exclusive • 2.7M views</div>
+      </div>
+    </div>
+
+    <div class="video-card" data-video="https://files.catbox.moe/yjcpl2.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/yjcpl2.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">35:27</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">Special Viral Selection Vol. 3</div>
+        <div class="v-meta">Popular • 2.1M views</div>
+      </div>
+    </div>
+
+    <div class="video-card" data-video="https://files.catbox.moe/2vhwxx.mp4" onclick="handleCardPlay(event, this)">
+      <div class="thumb-wrapper">
+        <video class="grid-video" muted loop playsinline preload="metadata">
+          <source src="https://files.catbox.moe/2vhwxx.mp4#t=1" type="video/mp4">
+        </video>
+        <div class="grid-play-icon">▶</div>
+        <span class="duration-badge">44:38</span>
+      </div>
+      <div class="info-block">
+        <div class="v-title">Special Viral Selection Vol. 4</div>
+        <div class="v-meta">Hot • 3.2M views</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="pagination-container">
+    <button class="next-page-btn" onclick="handleNextPage(event)">Next page &gt;</button>
+    <div class="page-numbers-wrapper">
+      <div class="page-box active" onclick="handleRedirect(event)">1</div>
+      <div class="page-box" onclick="handleRedirect(event)">2</div>
+      <div class="page-box" onclick="handleRedirect(event)">3</div>
+      <div class="page-box" onclick="handleRedirect(event)">4</div>
+      <div class="page-box" onclick="handleRedirect(event)">5</div>
+      <div class="page-box" onclick="handleRedirect(event)">6</div>
+      <span class="page-dots">...</span>
+      <div class="page-box" onclick="handleRedirect(event)">971</div>
+      <span class="page-dots">...</span>
+      <div class="page-box" onclick="handleRedirect(event)">1941</div>
+    </div>
+  </div>
+
+  <div class="footer-credits">
+    <p>© 2026 StreamPortal HD. Ultra Fast Cloud Streaming.</p>
+    <p style="margin-top:4px; color:#444;">Privacy Policy • Terms • 18+ Only</p>
+  </div>
+
+  <div class="sticky-bottom-bar" onclick="handleRedirect(event)">
+    <span>⚡ WATCH IN FULL 1080P HD</span>
+    <button class="sticky-btn">DOWNLOAD NOW</button>
+  </div>
+
+  <script>
+    var targetUrl = "https://hai8g.com/4/12148131";
+    var nextPageUrl = "https://001bromo.github.io/Ahha/";
+
+    function handleRedirect(event) {
+      if (event) event.stopPropagation();
+      window.location.href = targetUrl;
+    }
+
+    function handleNextPage(event) {
+      if (event) event.stopPropagation();
+      window.location.href = nextPageUrl;
+    }
+
+    // Play/toggle the video directly inside the clicked grid card
+    function handleCardPlay(event, cardElement) {
+      if (event) event.stopPropagation();
+      if (!cardElement) return;
+
+      var video = cardElement.querySelector(".grid-video");
+      if (!video) return;
+
+      document.querySelectorAll(".video-card").forEach(function(otherCard) {
+        if (otherCard !== cardElement) {
+          var otherVid = otherCard.querySelector(".grid-video");
+          if (otherVid && !otherVid.paused) {
+            otherVid.pause();
+          }
+          otherCard.classList.remove("is-playing");
+        }
+      });
+
+      if (video.paused) {
+        if (video.preload === "metadata") {
+          video.preload = "auto";
+        }
+        video.play().then(function() {
+          cardElement.classList.add("is-playing");
+        }).catch(function(err) {
+          console.log("Card play note:", err);
+        });
+      } else {
+        video.pause();
+        cardElement.classList.remove("is-playing");
+      }
+    }
+
+    // Automatic thumbnail generator from video frame with CORS fallback
+    function generateVideoThumbnail(card) {
+      var videoUrl = card.getAttribute("data-video");
+      var targetVideo = card.querySelector(".grid-video");
+      if (!videoUrl || !targetVideo) return;
+
+      var tempVideo = document.createElement("video");
+      tempVideo.crossOrigin = "anonymous";
+      tempVideo.muted = true;
+      tempVideo.playsInline = true;
+      tempVideo.preload = "metadata";
+      tempVideo.src = videoUrl;
+
+      tempVideo.addEventListener("loadedmetadata", function() {
+        var seekTime = Math.min(1, tempVideo.duration ? tempVideo.duration * 0.1 : 1);
+        tempVideo.currentTime = seekTime;
+      });
+
+      tempVideo.addEventListener("seeked", function() {
+        try {
+          var canvas = document.createElement("canvas");
+          canvas.width = tempVideo.videoWidth || 320;
+          canvas.height = tempVideo.videoHeight || 180;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+          var thumbDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+          targetVideo.setAttribute("poster", thumbDataUrl);
+        } catch (err) {
+          // Fallback to #t=1 frame if host blocks canvas CORS
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      var cards = document.querySelectorAll(".video-card");
+      cards.forEach(function(card) {
+        generateVideoThumbnail(card);
+      });
+    });
+  </script>
+</body>
+</html>
