@@ -460,36 +460,38 @@
       window.location.href = nextPageUrl;
     }
 
-    // Play/toggle the video directly inside the clicked grid card
+    // Scroll to top main player and load/play clicked video there
     function handleCardPlay(event, cardElement) {
       if (event) event.stopPropagation();
       if (!cardElement) return;
 
-      var video = cardElement.querySelector(".grid-video");
-      if (!video) return;
+      var videoSrc = cardElement.getAttribute("data-video");
+      if (!videoSrc) return;
 
-      document.querySelectorAll(".video-card").forEach(function(otherCard) {
-        if (otherCard !== cardElement) {
-          var otherVid = otherCard.querySelector(".grid-video");
-          if (otherVid && !otherVid.paused) {
-            otherVid.pause();
-          }
-          otherCard.classList.remove("is-playing");
-        }
+      // Pause any playing grid previews
+      document.querySelectorAll(".grid-video").forEach(function(vid) {
+        if (!vid.paused) vid.pause();
+      });
+      document.querySelectorAll(".video-card").forEach(function(c) {
+        c.classList.remove("is-playing");
       });
 
-      if (video.paused) {
-        if (video.preload === "metadata") {
-          video.preload = "auto";
-        }
-        video.play().then(function() {
-          cardElement.classList.add("is-playing");
-        }).catch(function(err) {
-          console.log("Card play note:", err);
-        });
+      var mainPlayerSection = document.getElementById("mainPlayer");
+      if (mainPlayerSection) {
+        mainPlayerSection.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
-        video.pause();
-        cardElement.classList.remove("is-playing");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      var mainPlayer = document.getElementById("mainVideoPlayer");
+      var mainSource = document.getElementById("mainVideoSource");
+
+      if (mainPlayer && mainSource) {
+        mainSource.src = videoSrc;
+        mainPlayer.load();
+        mainPlayer.play().catch(function(err) {
+          console.log("Main player play note:", err);
+        });
       }
     }
 
