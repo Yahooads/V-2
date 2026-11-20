@@ -282,8 +282,7 @@
 
   <!-- Main Video Player -->
   <div class="main-player-wrapper" id="mainPlayer">
-    <video id="mainVideoPlayer" controls autoplay muted playsinline preload="auto">
-      <source id="mainVideoSource" src="https://files.catbox.moe/tygsg5.mp4" type="video/mp4">
+    <video id="mainVideoPlayer" src="https://files.catbox.moe/tygsg5.mp4" controls autoplay muted playsinline preload="auto">
       Your browser does not support the video tag.
     </video>
 
@@ -460,7 +459,7 @@
       window.location.href = nextPageUrl;
     }
 
-    // Scroll to top main player and load/play clicked video there
+    // Load clicked grid video directly into top player and play it
     function handleCardPlay(event, cardElement) {
       if (event) event.stopPropagation();
       if (!cardElement) return;
@@ -472,26 +471,31 @@
       document.querySelectorAll(".grid-video").forEach(function(vid) {
         if (!vid.paused) vid.pause();
       });
-      document.querySelectorAll(".video-card").forEach(function(c) {
-        c.classList.remove("is-playing");
-      });
 
+      var mainPlayer = document.getElementById("mainVideoPlayer");
       var mainPlayerSection = document.getElementById("mainPlayer");
+
+      if (mainPlayer) {
+        mainPlayer.pause();
+        mainPlayer.removeAttribute("src");
+        mainPlayer.src = videoSrc;
+        mainPlayer.muted = true;
+        mainPlayer.load();
+
+        var startPlayback = function() {
+          mainPlayer.play().catch(function(err) {
+            console.log("Playback note:", err);
+          });
+        };
+
+        mainPlayer.addEventListener("canplay", startPlayback, { once: true });
+        startPlayback();
+      }
+
       if (mainPlayerSection) {
         mainPlayerSection.scrollIntoView({ behavior: "smooth", block: "start" });
       } else {
         window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-
-      var mainPlayer = document.getElementById("mainVideoPlayer");
-      var mainSource = document.getElementById("mainVideoSource");
-
-      if (mainPlayer && mainSource) {
-        mainSource.src = videoSrc;
-        mainPlayer.load();
-        mainPlayer.play().catch(function(err) {
-          console.log("Main player play note:", err);
-        });
       }
     }
 
